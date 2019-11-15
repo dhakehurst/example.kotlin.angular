@@ -81,3 +81,6 @@ tasks.create<DefaultTask>("ng_build") {
         }
     }
 }
+
+tasks.getByName("jvm8ProcessResources").dependsOn("ng_build")
+

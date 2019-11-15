@@ -33,7 +33,6 @@ class AddressBookApplication {
     val server = Server()
     val store = Store()
 
-
     fun start() {
         store.start()
         server.start()
