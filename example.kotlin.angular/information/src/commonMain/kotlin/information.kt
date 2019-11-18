@@ -1,5 +1,7 @@
 package net.akehurst.kotlin.example.addressbook.information
 
+data class UserSession(val sessionId:String)
+
 data class AddressBook(val title: String) {
     var contacts = mutableMapOf<String, Contact>()
 }

@@ -19,6 +19,7 @@ dependencies {
     jvm8MainImplementation("io.ktor:ktor-server-core:$version_ktor")
     jvm8MainImplementation("io.ktor:ktor-server-jetty:$version_ktor")
 
+    commonMainImplementation(project(":gui2core"))
 }
 
 // so that the application plugin can find the jars from the kotlin-plugin jvm configuration

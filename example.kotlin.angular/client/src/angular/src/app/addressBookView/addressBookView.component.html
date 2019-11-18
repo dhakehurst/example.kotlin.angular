@@ -1,20 +1,36 @@
-<section *ngIf="addressBook">
-  <header>
-    <h2>{{contact.alias | uppercase}} Details</h2>
-  </header>
-  <article>
+<header>
+  <h2>
+    <select (select)="selectAddressBook($event)">
+      <option *ngFor="let title of addressBookList" [value]="title">{{title}}</option>
+    </select>
+  </h2>
+  <button (click)="requestCreateAddressBook()">Create New Address Book</button>
+  <button (click)="requestDeleteAddressBook()">Delete Address Book</button>
+</header>
+<article>
 
-    <label>alias:
-      <input [(ngModel)]="contact.alias" placeholder="alias"/>
-    </label>
+  <label>title:
+    <input [(ngModel)]="selectedAddressBookTitle" placeholder="title"/>
+  </label>
 
-    <label>firstName:
-      <input [(ngModel)]="contact.firstName" placeholder="firstName"/>
-    </label>
+  <table>
+    <thead>
+    <tr>
+      <th>
+        <button class="add" (click)="requestCreateContact()"></button>
+      </th>
+      <th>Contact</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let contact of contactList">
+      <td>
+        <button class="delete" (click)="requestDeleteContact(contact)"></button>
+      </td>
+      <td (click)="readContact(contact)">{{contact.alias}}</td>
+    </tr>
+    </tbody>
+  </table>
 
-    <label>lastName:
-      <input [(ngModel)]="contact.lastName" placeholder="lastName"/>
-    </label>
+</article>
 
-  </article>
-</section>
