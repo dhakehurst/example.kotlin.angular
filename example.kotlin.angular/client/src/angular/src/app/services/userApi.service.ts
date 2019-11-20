@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject, throwError} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import { Subject} from 'rxjs';
 
 import * as $kotlin from 'kotlin';
 
@@ -24,9 +23,13 @@ export class UserApiService {
   private websocket: wsc.WebsocketClientKtor<string>;
   private gui2Core = new gui2core.Gui2Core();
 
-  session: info.UserSession;
+  session: info.UserSession = new info.UserSession();
   userRequest = new UserRequestService(this.gui2Core);
   userNotification = new UserNotificationService();
+
+  constructor(
+  ) {
+  }
 
   private waitForWebsocket(ws, resolve): void {
     if (ws.websocket) {
@@ -37,19 +40,24 @@ export class UserApiService {
   }
 
   init(resolve) {
+    //TODO: how to find out the session_id?
+
+    this.session.sessionId = "unknown";
     // create
     this.websocket = new wsc.WebsocketClientKtor<string>();
-    this.websocket.endPointId = "";
-    this.websocket.host = window.location.hostname;
-    this.websocket.port = parseInt(window.location.port, 10);
+    this.websocket.sessionId = "unknown";
+    let host = window.location.hostname;
+    let port = parseInt(window.location.port, 10);
+    let path = "ws";
 
     // connect
     this.gui2Core.outgoingMessage = this.websocket.incomingMessage;
-    this.websocket.incomingMessage = this.gui2Core.outgoingMessage;
+    this.websocket.outgoingMessage = this.gui2Core.incomingMessage;
+    this.gui2Core.userNotification = this.userNotification;
 
     // activate
     this.gui2Core.start();
-    this.websocket.start();
+    this.websocket.start(host, port, path);
 
     // wait until websocket is established
     this.waitForWebsocket(this.websocket, resolve);
@@ -112,7 +120,7 @@ class UserNotificationService implements UI.UserNotification {
   notifyCreatedContactSubject = new Subject<string>();
   notifyReadAllContactSubject = new Subject<$kotlin.kotlin.collections.List<string>>();
   notifyReadContactSubject = new Subject<info.Contact>();
-  notifyUpdatedContactSubject = new Subject<info.Contact>();
+  notifyUpdatedContactSubject = new Subject<{oldAlias:string, updatedContact:info.Contact}>();
   notifyDeletedContactSubject = new Subject<string>();
 
   notifyCreatedAddressBook(session: info.UserSession, title: string): void {
@@ -148,7 +156,7 @@ class UserNotificationService implements UI.UserNotification {
   }
 
   notifyUpdatedContact(session: info.UserSession, oldAlias: string, updatedContact: info.Contact): void {
-    this.notifyUpdatedContactSubject.next(updatedContact);
+    this.notifyUpdatedContactSubject.next({oldAlias, updatedContact});
   }
 
   notifyDeletedContact(session: info.UserSession, alias: string): void {

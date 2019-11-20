@@ -25,7 +25,7 @@ export class AddressBookListComponent implements OnInit {
       this.addressBookList.push(title);
     });
     this.userApi.userNotification.notifyReadAllAddressBookSubject.subscribe( titles=>{
-      this.addressBookList  = titles.toTypedArray();
+      this.addressBookList  = titles.toArray();
     });
     this.userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
       let i = this.addressBookList.indexOf(title);

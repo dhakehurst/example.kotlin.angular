@@ -2,6 +2,7 @@ package net.akehurst.kotlin.example.addressbook.gui2core
 
 import net.akehurst.kotlin.json.JsonDocument
 import net.akehurst.kotlin.kserialisation.json.KSerialiserJson
+import net.akehurst.kotlinx.reflect.ModuleRegistry
 import kotlin.js.JsName
 
 class InformationSerialiser {
@@ -30,8 +31,9 @@ class InformationSerialiser {
     internal val kserialiser = KSerialiserJson()
 
     init {
-        this.kserialiser.registerModule("example.kotlin.angular-information")
-
+        //this.kserialiser.registerModule("example.kotlin.angular-information")
+        //TODO: replace with above
+        ModuleRegistry.register("example.kotlin.angular-information")
         this.kserialiser.confgureDatatypeModel(KOMPOSITE)
 
         this.kserialiser.registerKotlinStdPrimitives();

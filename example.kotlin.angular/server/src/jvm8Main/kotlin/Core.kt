@@ -2,6 +2,7 @@ package net.akehurst.kotlin.example.addressbook.server
 
 import net.akehurst.kotlin.example.addressbook.information.AddressBook
 import net.akehurst.kotlin.example.addressbook.information.Contact
+import net.akehurst.kotlin.example.addressbook.information.PhoneNumber
 import net.akehurst.kotlin.example.addressbook.information.UserSession
 import net.akehurst.kotlin.example.addressbook.user.api.UserNotification
 import net.akehurst.kotlin.example.addressbook.user.api.UserRequest
@@ -13,6 +14,18 @@ class Core : UserRequest {
 
     // This is just an example/tutorial so we just use an in-memory store
     private val addressBooks = mutableMapOf<String, AddressBook>()
+
+    init {
+        //initialise with some default data
+        val dab = AddressBook("Default")
+        val aa = Contact("Adam Ant")
+        aa.firstName = "Adam"
+        aa.lastName = "Ant"
+        aa.phoneNumbers["Work"] = PhoneNumber("Work", "0123456789")
+        dab.contacts[aa.alias] = aa
+        addressBooks[dab.title] = dab
+
+    }
 
     override fun requestCreateAddressBook(session: UserSession, title: String) {
         val ab = AddressBook(title)
@@ -40,6 +53,7 @@ class Core : UserRequest {
             val contact = Contact(alias)
             ab.contacts[alias] = contact
         }
+        this.userNotification.notifyCreatedContact(session,alias)
     }
 
     override fun requestReadAllContact(session: UserSession, addressBookTitle: String) {

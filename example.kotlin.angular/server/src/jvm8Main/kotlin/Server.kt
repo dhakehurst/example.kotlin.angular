@@ -6,9 +6,6 @@ import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.cio.websocket.*
-import io.ktor.http.content.default
-import io.ktor.http.content.resources
-import io.ktor.http.content.static
 import io.ktor.routing.Routing
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -23,7 +20,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import net.akehurst.kotlin.example.addressbook.gui2core.Core2Gui
-import net.akehurst.kotlin.example.addressbook.user.api.UserRequest
 
 fun main() {
     val app = AddressBookApplication()
@@ -65,6 +61,7 @@ class Server {
             incomingMessage.consumeEach { m ->
                 val sessionId = m.first
                 val messageId = m.second
+                println("incoming: $messageId")
                 val message = m.third
                 val frame = Frame.Text("$messageId$DELIMITER$message")
                 val ws = connections[sessionId]!!
@@ -76,21 +73,31 @@ class Server {
             install(DefaultHeaders)
             install(CallLogging)
             install(Routing)
-            install(WebSockets)
             install(Sessions) {
-                cookie<String>("SESSION")
+                cookie<String>("SESSION_ID")
+            }
+            install(WebSockets) {
+
             }
             intercept(ApplicationCallPipeline.Features) {
                 call.sessions.set<String>(generateNonce())
+            }
+            install(SinglePageApplication) {
+                defaultPage = "index.html"
+                folderPath = "/dist"
+                spaRoute = ""
+                useFiles = false
             }
             routing {
                 webSocket("/ws") {
                     handleWebsocketConnection(this)
                 }
+                /*
                 static("/") {
                     resources("/dist")
                     default("index.html")
                 }
+                */
             }
         }
 
@@ -98,23 +105,24 @@ class Server {
     }
 
     suspend fun handleWebsocketConnection(ws: WebSocketServerSession) {
-        val session = ws.call.sessions.get<String>()
-        if (session == null) {
+        val sessionId = ws.call.sessions.get<String>()
+        if (sessionId == null) {
             //this should not happen
             ws.close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No session"))
         } else {
-            connections[session] = ws
-            println("Websocket Connection opened from $session")
+            connections[sessionId] = ws
+            println("Websocket Connection opened from $sessionId")
             //messageChannel.newEndPoint(session) ?
             try {
                 ws.incoming.consumeEach { frame ->
-                    println("Websocket Connection message from $session, $frame")
+                    println("Websocket Connection message from $sessionId, $frame")
                     when (frame) {
                         is Frame.Text -> {
                             val text = frame.readText()
                             val messageId = text.substringBefore(DELIMITER)
                             val message = text.substringAfter(DELIMITER)
-                            this.outgoingMessage.send(Triple(session, messageId, message))
+                            println("outgoing: $messageId")
+                            this.outgoingMessage.send(Triple(sessionId, messageId, message))
                         }
                         is Frame.Binary -> {
                         }
@@ -128,8 +136,8 @@ class Server {
                     }
                 }
             } finally {
-                connections.remove(session)
-                println("Websocket Connection closed from $session")
+                connections.remove(sessionId)
+                println("Websocket Connection closed from $sessionId")
             }
         }
     }

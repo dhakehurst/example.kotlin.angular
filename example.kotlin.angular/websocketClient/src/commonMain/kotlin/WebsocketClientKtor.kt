@@ -17,6 +17,10 @@
 package net.akehurst.kotlin.example.addressbook.websocket.client.ktor
 
 import io.ktor.client.HttpClient
+import io.ktor.client.features.cookies.AcceptAllCookiesStorage
+import io.ktor.client.features.cookies.HttpCookies
+import io.ktor.client.features.cookies.cookies
+import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
@@ -30,10 +34,7 @@ import kotlinx.coroutines.launch
 import kotlin.js.JsName
 
 class WebsocketClientKtor<T : Any>(
-        val endPointId: T,
-        val host: String,
-        val port: Int,
-        val path: String
+        val sessionId: T
 ) {
 
     companion object {
@@ -42,14 +43,16 @@ class WebsocketClientKtor<T : Any>(
 
     @JsName("websocket")
     private var websocket: WebSocketSession? = null
-    lateinit var outgoingMessage: Channel<Triple<String, String, String>>
-    val incomingMessage = Channel<Triple<String, String, String>>()
+    lateinit var outgoingMessage: Channel<Triple<T, String, String>>
+    val incomingMessage = Channel<Triple<T, String, String>>()
 
-    fun start() {
+    @JsName("start")
+    fun start(host: String, port: Int, path: String){
         GlobalScope.launch {
             incomingMessage.consumeEach { m ->
                 val sessionId = m.first
                 val messageId = m.second
+                println("incoming: $messageId")
                 val message = m.third
                 val frame = Frame.Text("${messageId}${DELIMITER}${message}")
                 websocket?.outgoing?.offer(frame)
@@ -65,24 +68,25 @@ class WebsocketClientKtor<T : Any>(
                     port = port,
                     path = path
             ) {
-                handleWebsocketConnection(endPointId, this)
+                    handleWebsocketConnection(sessionId, this)
             }
         }
     }
 
-    private suspend fun handleWebsocketConnection(session: T, ws: WebSocketSession) {
+    private suspend fun handleWebsocketConnection(sessionId: T, ws: WebSocketSession) {
         websocket = ws
-        val sessionId = "?"
-        println("Websocket Connection opened from $session")
+
+        println("Websocket Connection opened from $sessionId")
         //messageChannel.newEndPoint(session) ?
         try {
             ws.incoming.consumeEach { frame ->
-                println("Websocket Connection message from $session, $frame")
+                println("Websocket Connection message from $sessionId, $frame")
                 when (frame) {
                     is Frame.Text -> {
                         val text = frame.readText()
                         val messageId = text.substringBefore(DELIMITER)
                         val message = text.substringAfter(DELIMITER)
+                        println("outgoing: $messageId")
                         outgoingMessage.send(Triple(sessionId, messageId, message))
                     }
                     is Frame.Binary -> {
@@ -96,9 +100,11 @@ class WebsocketClientKtor<T : Any>(
                     }
                 }
             }
+        } catch (t:Throwable) {
+            println("Error: $t")
         } finally {
             websocket = null
-            println("Websocket Connection closed from $session")
+            println("Websocket Connection closed from $sessionId")
         }
     }
 }

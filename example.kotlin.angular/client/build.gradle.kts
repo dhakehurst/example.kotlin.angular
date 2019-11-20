@@ -31,8 +31,34 @@ dependencies {
     jvm8MainImplementation(project(":gui2core"))
 }
 
+val moduleNameMaping = mapOf(
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core-js" to "kotlinx-coroutines-core",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core" to "kotlinx-coroutines-core",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core-common" to "kotlinx-coroutines-core-common",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-io-js" to "kotlinx-io-kotlinx-coroutines-io",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-io" to "kotlinx-io-kotlinx-coroutines-io",
+        "org.jetbrains.kotlinx:kotlinx-io-js" to "kotlinx-io",
+        "org.jetbrains.kotlinx:kotlinx-io" to "kotlinx-io",
+        "org.jetbrains.kotlinx:atomicfu-common" to "kotlinx-atomicfu",
+        "org.jetbrains.kotlinx:atomicfu-js" to "kotlinx-atomicfu",
+        "org.jetbrains.kotlinx:atomicfu" to "kotlinx-atomicfu",
+        "io.ktor:ktor-http-cio-js" to "ktor-ktor-http-cio",
+        "io.ktor:ktor-http-cio" to "ktor-ktor-http-cio",
+        "io.ktor:ktor-client-core-js" to "ktor-ktor-client-core",
+        "io.ktor:ktor-client-core" to "ktor-ktor-client-core",
+        "io.ktor:ktor-client-websockets-js" to "ktor-ktor-client-websockets",
+        "io.ktor:ktor-client-websockets" to "ktor-ktor-client-websockets",
+        "io.ktor:ktor-http-js" to "ktor-ktor-http",
+        "io.ktor:ktor-http" to "ktor-ktor-http",
+        "io.ktor:ktor-utils-js" to "ktor-ktor-utils",
+        "io.ktor:ktor-utils" to "ktor-ktor-utils"
+)
+
 kt2ts {
     kotlinStdlibJsDir.set(file("${ngSrcDir}/node_modules/kotlin"))
+    nodeModulesDirectoryPath.set("${ngSrcDir}/node_modules")
+    unpackConfigurationName.set("jsKotlin")
+    moduleNameMap.set(moduleNameMaping)
 }
 
 kotlin {
@@ -63,32 +89,8 @@ tasks.create<DefaultTask>("yarn_install") {
         YarnSimple.yarnExec(project.rootProject, file("${ngSrcDir}"), "yarn_install", "install", "--cwd", "--no-bin-links")
     }
 }
-
-tasks.create<Copy>("unpack_kotlinJs") {
-    group = "angular"
-    dependsOn(jsKotlin, "yarn_install")
-    jsKotlin.resolvedConfiguration.resolvedArtifacts.forEach { dep ->
-        println("unpacking ${dep.name}")
-        val dn = dep.name.substringBeforeLast("-")
-        val tgtName = "${dep.moduleVersion.id.group}-${dn}"   // this name may not be correct for some modules but it appears to be somewhat of a default
-        from(zipTree(dep.file)) {
-            includeEmptyDirs = false
-            include { fileTreeElement ->
-                val path = fileTreeElement.path
-                (path.endsWith(".js") || path.endsWith("d.ts") || path.endsWith("package.json"))
-                        && (path.startsWith("META-INF/resources/") || !path.startsWith("META-INF/"))
-            }
-            into(tgtName)
-        }
-        into("${ngSrcDir}/node_modules")
-    }
-}
-
+tasks.getByName("unpack_kotlin_js").dependsOn(jsKotlin, "yarn_install")
 val thirdPartyDeps = mapOf(
-        "ktor-http-cio-js" to mapOf(
-                "classPatterns" to listOf<String>(),
-                "moduleOnly" to listOf("ktor-http-cio-jvm")
-        ),
         "kotlinx-coroutines-core-js" to mapOf(
                 "classPatterns" to listOf(
                         "kotlinx.coroutines.internal.OpDescriptor",
@@ -104,28 +106,51 @@ val thirdPartyDeps = mapOf(
                         "kotlinx.coroutines.selects.SelectClause2"
                 ),
                 "moduleOnly" to listOf("kotlinx-coroutines-core"),
-                "group" to "org.jetbrains.kotlinx",
+                "group" to "",
                 "name" to "kotlinx-coroutines-core",
                 "mainFileName" to "kotlinx-coroutines-core.js",
-                "tgtName" to "org.jetbrains.kotlinx-kotlinx-coroutines-core"
+                "tgtName" to "kotlinx-coroutines-core"
         )
 )
+
+/*
+tasks.create<Copy>("unpack_kotlinJs") {
+    group = "angular"
+    //dependsOn(jsKotlin, "yarn_install")
+    jsKotlin.resolvedConfiguration.resolvedArtifacts.forEach { dep ->
+        println("unpacking ${dep.name}")
+        val dn = dep.name.substringBeforeLast("-")
+        val tgtName = thirdPartyDeps[dep.name]?.get("tgtName") as String? ?: "${dep.moduleVersion.id.group}-${dn}"
+        from(zipTree(dep.file)) {
+            includeEmptyDirs = false
+            include { fileTreeElement ->
+                val path = fileTreeElement.path
+                (path.endsWith(".js") || path.endsWith("d.ts") || path.endsWith("package.json"))
+                        && (path.startsWith("META-INF/resources/") || !path.startsWith("META-INF/"))
+            }
+            into(tgtName)
+        }
+        into("${ngSrcDir}/node_modules")
+    }
+}
+*/
 //convert kotlinx.coroutins into a ts module
 jsKotlin.resolvedConfiguration.resolvedArtifacts.forEach { dep ->
     if (thirdPartyDeps.containsKey(dep.name)) {
         val dn = dep.name.substringBeforeLast("-")
-        val tgtName = thirdPartyDeps[dep.name]!!["tgtName"] as String? ?: "${dep.moduleVersion.id.group}-${dn}"
+        val tgtName = thirdPartyDeps[dep.name]?.get("tgtName") as String? ?: "${dep.moduleVersion.id.group}-${dn}"
         tasks.create<GenerateDeclarationsTask>("generateDeclarationsFor_${dep.name}") {
             group ="generate"
-            dependsOn("unpack_kotlinJs")
+            dependsOn("unpack_kotlin_js")
             if (null!=thirdPartyDeps[dep.name]!!["group"]) moduleGroup.set(thirdPartyDeps[dep.name]!!["group"] as String)
             if (null!=thirdPartyDeps[dep.name]!!["name"]) moduleName.set(thirdPartyDeps[dep.name]!!["name"] as String)
+            moduleNameMap.set(moduleNameMaping)
+            classPatterns.set(thirdPartyDeps[dep.name]!!["classPatterns"] as List<String>)
             //overwrite.set(false)
             localOnly.set(false)
             moduleOnly.set(thirdPartyDeps[dep.name]!!["moduleOnly"] as List<String>)
             modulesConfigurationName.set("jvm8RuntimeClasspath")
             declarationsFile.set(file("${ngSrcDir}/node_modules/${tgtName}/${dep.moduleVersion.id.group}-${dn}-js.d.ts"))
-            classPatterns.set(thirdPartyDeps[dep.name]!!["classPatterns"] as List<String>)
         }
         tasks.create<GeneratePackageJsonTask>("ensurePackageJsonFor_${dep.name}") {
             group ="generate"
@@ -141,7 +166,7 @@ jsKotlin.resolvedConfiguration.resolvedArtifacts.forEach { dep ->
 
 tasks.create<DefaultTask>("ng_build") {
     group = "angular"
-    dependsOn("unpack_kotlinJs")
+    dependsOn("unpack_kotlin_js")
     dependsOn("addKotlinStdlibDeclarations")
     doLast {
         if (project.hasProperty("ng") && project.property("ng") == "false") {
