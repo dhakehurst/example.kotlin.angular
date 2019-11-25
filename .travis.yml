@@ -1,0 +1,8 @@
+language: java
+
+before_install:
+  - cd net.akehurst.kotlin.example.addressbook
+  - chmod +x gradlew
+
+script: ./gradlew clean build
+
