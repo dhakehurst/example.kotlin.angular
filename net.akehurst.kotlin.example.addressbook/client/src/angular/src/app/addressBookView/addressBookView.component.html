@@ -1,0 +1,72 @@
+<article>
+  <header>
+    <h2>
+      <select (change)="readAddressBook($event)" [ngModel]="selectedAddressBookTitle">
+        <option *ngFor="let title of addressBookList" [value]="title">{{title}}</option>
+      </select>
+    </h2>
+  </header>
+
+  <section class="section1">
+    <label>title:
+      <input (change)="updateAddressBookTitle($event)" [ngModel]="selectedAddressBookTitle" placeholder="title"/>
+    </label>
+
+    <table>
+      <thead>
+      <tr>
+        <th>
+          <button class="add" (click)="requestCreateContact()"><i class="pi pi-plus"></i></button>
+        </th>
+        <th>Contact</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let contact of contactList">
+        <td>
+          <button class="remove" (click)="requestDeleteContact(contact)"><i class="pi pi-minus"></i></button>
+        </td>
+        <td (click)="readContact(contact)">{{contact}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section *ngIf="selectedContact" class="section2">
+      <label>alias:
+        <input [(ngModel)]="selectedContact.alias" placeholder="alias"/>
+      </label>
+      <label>first name:
+        <input [(ngModel)]="selectedContact.firstName" placeholder="firstName"/>
+      </label>
+      <label>last name:
+        <input [(ngModel)]="selectedContact.lastName" placeholder="lastName"/>
+      </label>
+      <label>phone numbers:
+        <table>
+          <thead>
+          <tr>
+            <th>
+              <button class="add" (click)="requestCreatePhoneNumber()"><i class="pi pi-plus"></i></button>
+            </th>
+            <th>Label</th>
+            <th>Number</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let pn of selectedContact.phoneNumbers.values.toArray()">
+            <td>
+              <button class="remove" (click)="requestDeletePhoneNumber(pn)"><i class="pi pi-minus"></i></button>
+            </td>
+            <td>{{pn.label}}</td>
+            <td>{{pn.number}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </label>
+  </section>
+
+  <footer>
+    <p>Address Book Example</p>
+  </footer>
+</article>

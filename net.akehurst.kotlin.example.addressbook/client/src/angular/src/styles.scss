@@ -1,0 +1,44 @@
+html {
+  /* layout-self */
+  height: 100vh;
+  width: 100vw;
+  background-color: cornsilk;
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+body {
+  /* layout-self */
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+main {
+  /* layout-self */
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+app-root {
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+router-outlet {
+  display: none;
+}
+
+button.add {
+  background-color: gold;
+}
+
+button.remove {
+  background-color: red;
+}

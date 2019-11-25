@@ -1,0 +1,6 @@
+:host{
+  margin: 10px 10px;
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}

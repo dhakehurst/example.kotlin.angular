@@ -1,0 +1,22 @@
+<section>
+  <header>
+    <h1>Address Books</h1>
+  </header>
+  <article>
+    <table>
+      <thead>
+      <tr>
+        <th><button class="add" (click)="createAddressBook()" ><i class="pi pi-plus"></i></button></th>
+        <th>Address Book</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let addressBook of addressBookList">
+        <td><button class="remove" (click)="deleteAddressBook(addressBook)" ><i class="pi pi-minus"></i></button></td>
+        <td class="click" (click)="readAddressBook(addressBook)">{{addressBook}}</td>
+      </tr>
+      </tbody>
+    </table>
+
+  </article>
+</section>

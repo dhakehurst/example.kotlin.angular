@@ -1,0 +1,20 @@
+<article *ngIf="contact">
+  <header>
+    <h2>{{contact.alias | uppercase}} Details</h2>
+  </header>
+  <section>
+
+    <label>alias:
+      <input [(ngModel)]="contact.alias" placeholder="alias"/>
+    </label>
+
+    <label>firstName:
+      <input [(ngModel)]="contact.firstName" placeholder="firstName"/>
+    </label>
+
+    <label>lastName:
+      <input [(ngModel)]="contact.lastName" placeholder="lastName"/>
+    </label>
+
+  </section>
+</article>
