@@ -22,15 +22,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {AddressBookListComponent} from "./addressBookList/addressBookList.component";
 import {AddressBookViewComponent} from "./addressBookView/addressBookView.component";
-import {ContactViewComponent} from "./contactView/contactView.component";
 import {UserApiService} from "./services/userApi.service";
 
 @NgModule({
   declarations: [
     AppComponent,
     AddressBookListComponent,
-    AddressBookViewComponent,
-    ContactViewComponent
+    AddressBookViewComponent
   ],
   imports: [
     BrowserModule,

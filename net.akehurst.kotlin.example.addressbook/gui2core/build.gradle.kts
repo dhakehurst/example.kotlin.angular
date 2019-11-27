@@ -15,11 +15,11 @@
  */
 
 plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.0.0"
+    id("net.akehurst.kotlin.kt2ts") version "1.1.0"
 }
 
 val version_kserialisation = "1.4.0"
-val version_coroutines = "1.3.2-1.3.60"
+val version_coroutines:String by project
 val version_kotlinx ="1.2.0"
 
 dependencies {
@@ -33,20 +33,8 @@ dependencies {
     jsMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version_coroutines")
 }
 
-val tsdDir ="${buildDir}/tmp/jsJar/ts"
-
-kotlin {
-    sourceSets {
-        val jsMain by getting {
-            resources.srcDir("${tsdDir}")
-        }
-    }
-}
-
 kt2ts {
     localJvmName.set("jvm8")
-    modulesConfigurationName.set("jvm8RuntimeClasspath")
-    outputDirectory.set(file("${tsdDir}"))
     classPatterns.set(listOf(
             "net.akehurst.kotlin.example.addressbook.gui2core.*"
     ))
@@ -54,5 +42,36 @@ kt2ts {
             "org.jetbrains.kotlinx:kotlinx-coroutines-core" to "kotlinx-coroutines-core"
     ))
 }
-tasks.getByName("generateTypescriptDefinitionFile").dependsOn("jvm8MainClasses")
-tasks.getByName("jsJar").dependsOn("generateTypescriptDefinitionFile")
+
+project.tasks.create("xxx") {
+
+    doLast {
+        val commonMainApi = this.project.configurations.findByName("commonMainApi") ?: throw RuntimeException("Cannot find 'commonMainApi' configuration")
+        val commonMainImplementation = this.project.configurations.findByName("commonMainImplementation") ?: throw RuntimeException("Cannot find 'commonMainImplementation' configuration")
+        val commonRuntime = this.project.configurations.create("commonRuntime")
+        commonMainApi.dependencies.forEach {
+            commonRuntime.dependencies.add(it)
+        }
+        commonMainImplementation.dependencies.forEach {
+            commonRuntime.dependencies.add(it)
+        }
+        val c = project.configurations.create("kt2ts_jvmRuntimeConfiguration") {
+            attributes{
+                attribute(org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.attribute, org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.jvm)
+                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages.KOTLIN_RUNTIME))
+            }
+        }
+        commonRuntime.dependencies.forEach {
+            if (it.name=="kotlinx-coroutines-core-common") {
+                val ver = it.version
+                c.dependencies.add(project.dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core:$ver"))
+            } else {
+                c.dependencies.add(it)
+            }
+        }
+        c.resolvedConfiguration.resolvedArtifacts.forEach {
+            println(it)
+        }
+    }
+
+}

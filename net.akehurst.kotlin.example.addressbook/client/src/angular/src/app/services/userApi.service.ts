@@ -19,16 +19,16 @@ import { Subject} from 'rxjs';
 
 import * as $kotlin from 'kotlin';
 
-import * as info_js from 'example.kotlin.angular-information';
+import * as info_js from 'net.akehurst.kotlin.example.addressbook-information';
 import info = info_js.net.akehurst.kotlin.example.addressbook.information;
 
-import * as ui_js from 'example.kotlin.angular-user-api';
+import * as ui_js from 'net.akehurst.kotlin.example.addressbook-user-api';
 import UI = ui_js.net.akehurst.kotlin.example.addressbook.user.api;
 
-import * as gui2core_js from 'example.kotlin.angular-gui2core';
+import * as gui2core_js from 'net.akehurst.kotlin.example.addressbook-gui2core';
 import gui2core = gui2core_js.net.akehurst.kotlin.example.addressbook.gui2core;
 
-import * as wsc_js from 'example.kotlin.angular-websocketClient'
+import * as wsc_js from 'net.akehurst.kotlin.example.addressbook-websocketClient'
 import wsc = wsc_js.net.akehurst.kotlin.example.addressbook.websocket.client.ktor;
 
 @Injectable({

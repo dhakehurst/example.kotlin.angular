@@ -39,8 +39,8 @@ class Core2Gui : UserNotification {
 
     private fun send(session: UserSession, messageId: String, vararg args: Any) {
         println("send: $messageId")
-        val args = args.toList()
-        val json = serialiser.toJson(args, args)
+        val argsList = args.toList()
+        val json = serialiser.toJson(argsList, argsList)
         val str = json.toJsonString()
         GlobalScope.async {
             outgoingMessage.send(Triple(session.sessionId, messageId, str))
@@ -50,7 +50,7 @@ class Core2Gui : UserNotification {
     fun start() {
         //TODO: use reflection here when kotlin JS reflection works
         messageActions["requestCreateAddressBook"] = { s, args -> this.userRequest.requestCreateAddressBook(s, args[0] as String) }
-        messageActions["requestReadAllAddressBookTitles"] = { s, args -> this.userRequest.requestReadAllAddressBookTitles(s) }
+        messageActions["requestReadAllAddressBookTitles"] = { s, _ -> this.userRequest.requestReadAllAddressBookTitles(s) }
         messageActions["requestUpdateAddressBook"] = { s, args -> this.userRequest.requestUpdateAddressBook(s, args[0] as String, args[1] as String) }
         messageActions["requestDeleteAddressBook"] = { s, args -> this.userRequest.requestDeleteAddressBook(s, args[0] as String) }
 
@@ -65,7 +65,8 @@ class Core2Gui : UserNotification {
                 val sessionId = m.first
                 val messageId = m.second
                 val message = m.third
-                val jargs = serialiser.toData(message) as List<Any>
+                val data = serialiser.toData(message)
+                val jargs = if (data is List<*>) data as List<Any> else throw RuntimeException("expected List<Any> got ${if (null==data) "null" else data::class}")
                 val session = UserSession(sessionId)
                 println("received: $messageId")
                 messageActions[messageId]?.invoke(session, jargs)
