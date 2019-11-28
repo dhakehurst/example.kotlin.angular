@@ -77,6 +77,7 @@ kt2ts {
 }
 
 // attach the build angular code as a 'resource' so it is added to the jar
+project.tasks.getByName("jvm8ProcessResources").dependsOn("ng_build")
 kotlin {
     sourceSets {
         val jvm8Main by getting {

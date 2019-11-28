@@ -52,9 +52,9 @@
  *
  */
 
-import {TextEncoder, TextDecoder} from 'text-encoding/lib/encoding.js';
-if (!window['TextEncoder']) window['TextEncoder'] =TextEncoder;
-if (!window['TextDecoder']) window['TextDecoder'] =TextDecoder;
+//import {TextEncoder, TextDecoder} from 'text-encoding/lib/encoding.js';
+//if (!window['TextEncoder']) window['TextEncoder'] =TextEncoder;
+//if (!window['TextDecoder']) window['TextDecoder'] =TextDecoder;
 
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.

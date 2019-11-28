@@ -34,3 +34,14 @@ kt2ts {
             "net.akehurst.kotlin.example.addressbook.websocket.client.ktor.*"
     ))
 }
+
+
+kotlin {
+    sourceSets {
+        val jsTest by getting {
+            dependencies {
+                api(npm("text-encoding"))
+            }
+        }
+    }
+}
