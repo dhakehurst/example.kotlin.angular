@@ -26,7 +26,7 @@ plugins {
     id("net.akehurst.kotlin.kt2ts") version "1.1.0"
 }
 
-val version_coroutines:String by project
+val version_coroutines: String by project
 
 dependencies {
 
@@ -47,9 +47,19 @@ val ngOutDir = project.layout.buildDirectory.dir("angular")
 kt2ts {
     ngSrcDirectory.set(ngSrcDir)
     ngOutDirectory.set(ngOutDir)
-    ngBuildAdditionalArguments.set(listOf(if (project.hasProperty("ngProd")) "--prod" else "","--source-map=true"))
+    ngBuildAdditionalArguments.set(
+            if (project.hasProperty("ngProd")) {
+                listOf("--prod")
+            } else {
+                listOf()
+            }
+    )
 
     localJvmName.set("jvm8")
+
+    dynamicImport.set(listOf(
+            "${project.group}:information"
+    ))
 
     generateThirdPartyModules {
         register("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines") {

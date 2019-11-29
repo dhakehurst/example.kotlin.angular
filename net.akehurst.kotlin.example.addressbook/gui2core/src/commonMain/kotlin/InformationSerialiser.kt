@@ -49,7 +49,7 @@ class InformationSerialiser {
     init {
         //this.kserialiser.registerModule("example.kotlin.angular-information")
         //TODO: replace with above
-        ModuleRegistry.register("net.akehurst.kotlin.example.addressbook-information")
+        ModuleRegistry.register("net.akehurst.kotlin.example.addressbook:information")
         this.kserialiser.confgureDatatypeModel(KOMPOSITE)
 
         this.kserialiser.registerKotlinStdPrimitives();
