@@ -47,7 +47,7 @@ val ngOutDir = project.layout.buildDirectory.dir("angular")
 kt2ts {
     ngSrcDirectory.set(ngSrcDir)
     ngOutDirectory.set(ngOutDir)
-    ngBuildAdditionalArguments.set(listOf(if (project.hasProperty("ngProd")) "--prod" else ""))
+    ngBuildAdditionalArguments.set(listOf(if (project.hasProperty("ngProd")) "--prod" else "","--source-map=true"))
 
     localJvmName.set("jvm8")
 
