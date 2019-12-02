@@ -17,6 +17,7 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 plugins {
     kotlin("multiplatform") version ("1.3.60") apply false
+    id("com.dorongold.task-tree") version "1.4"
 }
 
 allprojects {
@@ -36,6 +37,7 @@ allprojects {
     buildDir = File(rootProject.projectDir, ".gradle-build/${project.name}")
 
 }
+
 
 subprojects {
   apply(plugin = "org.jetbrains.kotlin.multiplatform")

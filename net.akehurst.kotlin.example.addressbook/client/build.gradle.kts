@@ -44,6 +44,10 @@ dependencies {
 val ngSrcDir = project.layout.projectDirectory.dir("src/angular")
 val ngOutDir = project.layout.buildDirectory.dir("angular")
 
+project.rootProject.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
+    nodeVersion = "13.2.0"
+}
+
 kt2ts {
     ngSrcDirectory.set(ngSrcDir)
     ngOutDirectory.set(ngOutDir)

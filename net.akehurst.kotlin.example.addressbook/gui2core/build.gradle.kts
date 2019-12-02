@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.npm.GradleNodeModule
+
 /**
  * Copyright (C) 2019 Dr. David H. Akehurst (http://dr.david.h.akehurst.net)
  *
@@ -41,37 +43,4 @@ kt2ts {
     moduleNameMap.set(mapOf(
             "org.jetbrains.kotlinx:kotlinx-coroutines-core" to "kotlinx-coroutines-core"
     ))
-}
-
-project.tasks.create("xxx") {
-
-    doLast {
-        val commonMainApi = this.project.configurations.findByName("commonMainApi") ?: throw RuntimeException("Cannot find 'commonMainApi' configuration")
-        val commonMainImplementation = this.project.configurations.findByName("commonMainImplementation") ?: throw RuntimeException("Cannot find 'commonMainImplementation' configuration")
-        val commonRuntime = this.project.configurations.create("commonRuntime")
-        commonMainApi.dependencies.forEach {
-            commonRuntime.dependencies.add(it)
-        }
-        commonMainImplementation.dependencies.forEach {
-            commonRuntime.dependencies.add(it)
-        }
-        val c = project.configurations.create("kt2ts_jvmRuntimeConfiguration") {
-            attributes{
-                attribute(org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.attribute, org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.jvm)
-                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages.KOTLIN_RUNTIME))
-            }
-        }
-        commonRuntime.dependencies.forEach {
-            if (it.name=="kotlinx-coroutines-core-common") {
-                val ver = it.version
-                c.dependencies.add(project.dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core:$ver"))
-            } else {
-                c.dependencies.add(it)
-            }
-        }
-        c.resolvedConfiguration.resolvedArtifacts.forEach {
-            println(it)
-        }
-    }
-
 }
