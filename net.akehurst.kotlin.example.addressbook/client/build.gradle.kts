@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import net.akehurst.kotlin.kt2ts.plugin.gradle.GenerateDeclarationsTask
-import net.akehurst.kotlin.kt2ts.plugin.gradle.GeneratePackageJsonTask
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnSetupTask
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnSimple
-
 plugins {
     id("net.akehurst.kotlin.kt2ts") version "1.2.0"
 }
@@ -34,16 +26,15 @@ dependencies {
     "ngKotlin"(project(":gui2core"))
     "ngKotlin"(project(":websocketClient"))
 
-    //add this so that the kt2ts plugin can find the jvm classes
-    // it needs the jvm modules/classes because it uses jvm reflection to generate .d.ts files
-    jvm8MainImplementation(project(":gui2core"))
 }
-
 
 // define these locations because they are used in multiple places
 val ngSrcDir = project.layout.projectDirectory.dir("src/angular")
 val ngOutDir = project.layout.buildDirectory.dir("angular")
 
+// need a newer version of node than the default used by kotlin-js.
+// the default version runs out of memory with obscure error message:-
+//     "An unhandled exception occurred: Call retries were exceeded"
 project.rootProject.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
     nodeVersion = "13.2.0"
 }
@@ -51,6 +42,8 @@ project.rootProject.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.Node
 kt2ts {
     ngSrcDirectory.set(ngSrcDir)
     ngOutDirectory.set(ngOutDir)
+
+    // adding -PngProd to the gradle build command gives us a production build of the angular code
     ngBuildAdditionalArguments.set(
             if (project.hasProperty("ngProd")) {
                 listOf("--prod")
@@ -59,12 +52,16 @@ kt2ts {
             }
     )
 
+    // we use a different (to default) name for the kotlin-jvm target
     jvmTargetName.set("jvm8")
 
+    // the ':information' module and classes are accessed by reflection (during de/- serialisation)
     dynamicImport.set(listOf(
             "${project.group}:information"
     ))
 
+    // generate .d.ts for coroutines
+    // required because coroutines are exposed by classes in gui2core
     generateThirdPartyModules {
         register("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines") {
             includeOnly.set(listOf("kotlinx-coroutines-core"))
