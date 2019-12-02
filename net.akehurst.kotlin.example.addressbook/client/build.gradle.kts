@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnSetupTask
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnSimple
 
 plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.1.0"
+    id("net.akehurst.kotlin.kt2ts") version "1.2.0"
 }
 
 val version_coroutines: String by project
@@ -59,7 +59,7 @@ kt2ts {
             }
     )
 
-    localJvmName.set("jvm8")
+    jvmTargetName.set("jvm8")
 
     dynamicImport.set(listOf(
             "${project.group}:information"

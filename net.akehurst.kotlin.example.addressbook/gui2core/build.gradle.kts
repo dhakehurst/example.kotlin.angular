@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.gradle.targets.js.npm.GradleNodeModule
  */
 
 plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.1.0"
+    id("net.akehurst.kotlin.kt2ts") version "1.2.0"
 }
 
 val version_kserialisation = "1.4.0"
@@ -35,7 +35,7 @@ dependencies {
 }
 
 kt2ts {
-    localJvmName.set("jvm8")
+    jvmTargetName.set("jvm8")
     classPatterns.set(listOf(
             "net.akehurst.kotlin.example.addressbook.gui2core.*"
     ))
