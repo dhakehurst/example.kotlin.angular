@@ -38,8 +38,10 @@ kt2ts {
 
 kotlin {
     sourceSets {
-        val jsTest by getting {
+        val jsMain by getting {
             dependencies {
+                //need to add this because kotlinx.io has a dependency on it
+                //webpack fails to find 'text-encoding'
                 api(npm("text-encoding"))
             }
         }
