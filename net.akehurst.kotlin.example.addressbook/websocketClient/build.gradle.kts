@@ -22,9 +22,7 @@ val version_ktor:String by project
 
 dependencies {
 
-    commonMainImplementation("io.ktor:ktor-client-websockets:$version_ktor")
-    jvm8MainImplementation("io.ktor:ktor-client-websockets-jvm:$version_ktor")
-    jsMainImplementation("io.ktor:ktor-client-websockets-js:$version_ktor")
+    commonMainImplementation("io.ktor:ktor-client-websockets-native:$version_ktor")
 
 }
 

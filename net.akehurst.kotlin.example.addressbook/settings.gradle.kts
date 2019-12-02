@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        mavenLocal()
-        gradlePluginPortal()
-    }
-}
-
 rootProject.name = file(".").name
 
 include("information")

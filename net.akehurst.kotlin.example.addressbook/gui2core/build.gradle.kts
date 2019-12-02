@@ -30,9 +30,8 @@ dependencies {
 
     commonMainImplementation("net.akehurst.kotlinx:kotlinx-reflect:$version_kotlinx") //TODO: remove
 
-    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version_coroutines")
-    jvm8MainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines")
-    jsMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version_coroutines")
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$version_coroutines")
+
 }
 
 kt2ts {
