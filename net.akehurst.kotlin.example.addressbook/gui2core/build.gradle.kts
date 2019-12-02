@@ -20,9 +20,9 @@ plugins {
     id("net.akehurst.kotlin.kt2ts") version "1.2.0"
 }
 
-val version_kserialisation = "1.4.0"
+val version_kserialisation:String by project
 val version_coroutines:String by project
-val version_kotlinx ="1.2.0"
+val version_kotlinx:String by project
 
 dependencies {
     commonMainApi(project(":user-api"))
