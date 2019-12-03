@@ -15,6 +15,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+
 plugins {
     kotlin("multiplatform") version ("1.3.60") apply false
     id("com.dorongold.task-tree") version "1.4"
@@ -39,48 +40,50 @@ allprojects {
 
 
 subprojects {
-  apply(plugin = "org.jetbrains.kotlin.multiplatform")
-  configure<KotlinMultiplatformExtension> {
-      all {
-            languageSettings {
-                useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+    apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    configure<KotlinMultiplatformExtension> {
+        sourceSets {
+            all {
+                languageSettings.apply {
+                    useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                }
             }
-      }
-
-    // we want to build for a JS target
-    js("js") {
-      browser()
-    }
-    // we want to build for a jvm target
-    jvm("jvm8") {
-      // by default kotlin uses JavaVersion 1.6
-      val main by compilations.getting {
-        kotlinOptions {
-          jvmTarget = JavaVersion.VERSION_1_8.toString()
-          freeCompilerArgs = listOf("-Xinline-classes")
         }
-      }
-      val test by compilations.getting {
-        kotlinOptions {
-          jvmTarget = JavaVersion.VERSION_1_8.toString()
+
+        // we want to build for a JS target
+        js("js") {
+            browser()
         }
-      }
+        // we want to build for a jvm target
+        jvm("jvm8") {
+            // by default kotlin uses JavaVersion 1.6
+            val main by compilations.getting {
+                kotlinOptions {
+                    jvmTarget = JavaVersion.VERSION_1_8.toString()
+                    freeCompilerArgs = listOf("-Xinline-classes")
+                }
+            }
+            val test by compilations.getting {
+                kotlinOptions {
+                    jvmTarget = JavaVersion.VERSION_1_8.toString()
+                }
+            }
+        }
     }
-  }
-  
-  dependencies {
-    "commonMainImplementation"(kotlin("stdlib"))
-    //"commonMainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version_coroutines")
-    "commonTestImplementation"(kotlin("test"))
-    "commonTestImplementation"(kotlin("test-annotations-common"))
 
-    "jvm8MainImplementation"(kotlin("stdlib-jdk8"))
-    //"jvm8MainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines")
-    "jvm8TestImplementation"(kotlin("test-junit"))
+    dependencies {
+        "commonMainImplementation"(kotlin("stdlib"))
+        //"commonMainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version_coroutines")
+        "commonTestImplementation"(kotlin("test"))
+        "commonTestImplementation"(kotlin("test-annotations-common"))
 
-    "jsMainImplementation"(kotlin("stdlib-js"))
-    //"jsMainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version_coroutines")
-    "jsTestImplementation"(kotlin("test-js"))
-  }
-  
+        "jvm8MainImplementation"(kotlin("stdlib-jdk8"))
+        //"jvm8MainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines")
+        "jvm8TestImplementation"(kotlin("test-junit"))
+
+        "jsMainImplementation"(kotlin("stdlib-js"))
+        //"jsMainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version_coroutines")
+        "jsTestImplementation"(kotlin("test-js"))
+    }
+
 }
