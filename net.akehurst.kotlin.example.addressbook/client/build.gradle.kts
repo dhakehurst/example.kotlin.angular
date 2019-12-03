@@ -23,8 +23,8 @@ val version_coroutines: String by project
 dependencies {
 
     // only need a direct dependency on these, the rest are transitively discovered
-    "ngKotlin"(project(":gui2core"))
-    "ngKotlin"(project(":websocketClient"))
+    ngKotlin(project(":gui2core"))
+    ngKotlin(project(":websocketClient"))
 
 }
 
@@ -64,7 +64,7 @@ kt2ts {
     // required because coroutines are exposed by classes in gui2core
     generateThirdPartyModules {
         register("org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines") {
-            includeOnly.set(listOf("kotlinx-coroutines-core"))
+            includeOnly.set(listOf("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
             moduleGroup.set("")
             moduleName.set("kotlinx-coroutines-core")
             mainFileName.set("kotlinx-coroutines-core.js")
