@@ -41,6 +41,12 @@ allprojects {
 subprojects {
   apply(plugin = "org.jetbrains.kotlin.multiplatform")
   configure<KotlinMultiplatformExtension> {
+      all {
+            languageSettings {
+                useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            }
+      }
+
     // we want to build for a JS target
     js("js") {
       browser()
