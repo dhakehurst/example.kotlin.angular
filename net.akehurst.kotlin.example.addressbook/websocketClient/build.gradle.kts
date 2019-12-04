@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.2.0"
-}
-
 val version_ktor:String by project
 
 dependencies {

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.npm.GradleNodeModule
-
 /**
  * Copyright (C) 2019 Dr. David H. Akehurst (http://dr.david.h.akehurst.net)
  *
@@ -15,10 +13,6 @@ import org.jetbrains.kotlin.gradle.targets.js.npm.GradleNodeModule
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.2.0"
-}
 
 val version_kserialisation:String by project
 val version_coroutines:String by project

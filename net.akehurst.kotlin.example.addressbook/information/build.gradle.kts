@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-plugins {
-    id("net.akehurst.kotlin.kt2ts") version "1.2.0"
-}
-
 kt2ts {
     jvmTargetName.set("jvm8")
     classPatterns.set(listOf(

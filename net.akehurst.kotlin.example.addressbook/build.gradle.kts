@@ -17,7 +17,8 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
-    kotlin("multiplatform") version ("1.3.60") apply false
+    kotlin("multiplatform") version("1.3.60") apply false
+    id("net.akehurst.kotlin.kt2ts") version("1.3.0") apply false
 }
 
 allprojects {
@@ -40,6 +41,8 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    apply(plugin = "net.akehurst.kotlin.kt2ts")
+
     configure<KotlinMultiplatformExtension> {
         sourceSets {
             all {

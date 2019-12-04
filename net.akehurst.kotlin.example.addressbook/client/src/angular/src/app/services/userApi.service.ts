@@ -39,7 +39,7 @@ export class UserApiService {
   private websocket: wsc.WebsocketClientKtor<string>;
   private gui2Core = new gui2core.Gui2Core();
 
-  session: info.UserSession = new info.UserSession();
+  session: info.UserSession;
   userRequest = new UserRequestService(this.gui2Core);
   userNotification = new UserNotificationService();
 
@@ -57,11 +57,9 @@ export class UserApiService {
 
   init(resolve) {
     //TODO: how to find out the session_id?
-
-    this.session.sessionId = "unknown";
+    this.session  = new info.UserSession("unknown");
     // create
-    this.websocket = new wsc.WebsocketClientKtor<string>();
-    this.websocket.sessionId = "unknown";
+    this.websocket = new wsc.WebsocketClientKtor<string>("unknown");
     let host = window.location.hostname;
     let port = parseInt(window.location.port, 10);
     let path = "ws";
