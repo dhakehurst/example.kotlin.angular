@@ -19,9 +19,6 @@ import {Router} from "@angular/router";
 
 import {UserApiService} from "../services/userApi.service";
 
-import * as info_js from 'net.akehurst.kotlin.example.addressbook-information';
-import info = info_js.net.akehurst.kotlin.example.addressbook.information;
-
 @Component({
   selector: 'app-addressBook-list',
   templateUrl: './addressBookList.component.html',

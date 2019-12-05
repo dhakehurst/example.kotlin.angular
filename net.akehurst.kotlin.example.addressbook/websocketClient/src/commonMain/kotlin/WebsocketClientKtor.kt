@@ -41,10 +41,13 @@ class WebsocketClientKtor<T : Any>(
         val DELIMITER = "|"
     }
 
-    @JsName("websocket")
-    private var websocket: WebSocketSession? = null
     lateinit var outgoingMessage: Channel<Triple<T, String, String>>
     val incomingMessage = Channel<Triple<T, String, String>>()
+
+    val connected get() = null!=this.websocket
+
+    private var websocket: WebSocketSession? = null
+
 
     @JsName("start")
     fun start(host: String, port: Int, path: String){

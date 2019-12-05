@@ -19,8 +19,8 @@ val version_coroutines: String by project
 dependencies {
 
     // only need a direct dependency on these, the rest are transitively discovered
-    ngKotlin(project(":gui2core"))
-    ngKotlin(project(":websocketClient"))
+    nodeKotlin(project(":gui2core"))
+    nodeKotlin(project(":websocketClient"))
 
 }
 
@@ -36,15 +36,15 @@ project.rootProject.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.Node
 }
 
 kt2ts {
-    ngSrcDirectory.set(ngSrcDir)
-    ngOutDirectory.set(ngOutDir)
+    nodeSrcDirectory.set(ngSrcDir)
+    nodeOutDirectory.set(ngOutDir)
 
     // adding -PngProd to the gradle build command gives us a production build of the angular code
-    ngBuildAdditionalArguments.set(
-            if (project.hasProperty("ngProd")) {
-                listOf("--prod")
+    nodeBuildCommand.set(
+            if (project.hasProperty("prod")) {
+                listOf("ng", "build", "--prod", "--outputPath=${ngOutDir}/dist")
             } else {
-                listOf()
+                listOf("ng", "build", "--outputPath=${ngOutDir}/dist")
             }
     )
 
@@ -84,7 +84,7 @@ kt2ts {
 }
 
 // attach the build angular code as a 'resource' so it is added to the jar
-project.tasks.getByName("jvm8ProcessResources").dependsOn("ngBuild")
+project.tasks.getByName("jvm8ProcessResources").dependsOn("nodeBuild")
 kotlin {
     sourceSets {
         val jvm8Main by getting {

@@ -35,7 +35,7 @@ dependencies {
     runtime(project(path = ":server", configuration = "jvm8RuntimeElements"))
 
     // to put the client module (angular code) on the classpath
-    jvm8MainImplementation(project(":client"))
+    jvm8MainImplementation(project(":client-angular"))
 
     // ktor server modules
     jvm8MainImplementation("io.ktor:ktor-websockets:$version_ktor")

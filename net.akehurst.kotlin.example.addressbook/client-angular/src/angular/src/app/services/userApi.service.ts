@@ -47,8 +47,8 @@ export class UserApiService {
   ) {
   }
 
-  private waitForWebsocket(ws, resolve): void {
-    if (ws.websocket) {
+  private waitForWebsocket(ws:wsc.WebsocketClientKtor<string>, resolve): void {
+    if (ws.connected) {
       resolve(true);
     } else {
       setTimeout(this.waitForWebsocket, 500, ws, resolve);
