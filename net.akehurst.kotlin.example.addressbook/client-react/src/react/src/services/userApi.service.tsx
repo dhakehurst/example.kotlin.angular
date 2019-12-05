@@ -22,10 +22,10 @@ import ui_js from 'net.akehurst.kotlin.example.addressbook-user-api';
 import {net as gui2core_js} from 'net.akehurst.kotlin.example.addressbook-gui2core';
 import {net as wsc_js} from 'net.akehurst.kotlin.example.addressbook-websocketClient'
 
-let info = info_js.net.akehurst.kotlin.example.addressbook.information;
-//let UI = ui_js.net.akehurst.kotlin.example.addressbook.user.api;
-let gui2core = gui2core_js.akehurst.kotlin.example.addressbook.gui2core;
-let wsc = wsc_js.akehurst.kotlin.example.addressbook.websocket.client.ktor;
+import UI = ui_js.net.akehurst.kotlin.example.addressbook.user.api;
+import info = info_js.net.akehurst.kotlin.example.addressbook.information;
+import gui2core = gui2core_js.akehurst.kotlin.example.addressbook.gui2core;
+import wsc = wsc_js.akehurst.kotlin.example.addressbook.websocket.client.ktor;
 
 class UserApiService {
 

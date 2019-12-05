@@ -42,9 +42,9 @@ kt2ts {
     // adding -PngProd to the gradle build command gives us a production build of the angular code
     nodeBuildCommand.set(
             if (project.hasProperty("prod")) {
-                listOf("ng", "build", "--prod", "--outputPath=${ngOutDir}/dist")
+                listOf("ng", "build", "--prod", "--outputPath=${ngOutDir.get()}/dist")
             } else {
-                listOf("ng", "build", "--outputPath=${ngOutDir}/dist")
+                listOf("ng", "build", "--outputPath=${ngOutDir.get()}/dist")
             }
     )
 

@@ -1,13 +1,44 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  /* layout-self */
+  height: 100vh;
+  width: 100vw;
+  background-color: cornsilk;
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  /* layout-self */
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+main {
+  /* layout-self */
+
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+app-root {
+  /* layout-children */
+  display: grid;
+  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+router-outlet {
+  display: none;
+}
+
+button.add {
+  background-color: gold;
+}
+
+button.remove {
+  background-color: red;
 }

@@ -1,0 +1,19 @@
+section {
+  display: flex;
+
+  flex-direction: column;
+}
+
+table {
+  thead {
+    border: 1px solid black;
+  }
+  tbody {
+    border: 1px solid black;
+  }
+}
+
+td.click {
+  cursor: pointer;
+  text-decoration: underline;
+}

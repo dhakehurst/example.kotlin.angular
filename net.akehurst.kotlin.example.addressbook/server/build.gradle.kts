@@ -29,13 +29,19 @@ repositories {
     }
 }
 
+val client = when (findProperty("client")) {
+    "angular" -> "client-angular"
+    "react" -> "client-react"
+    else -> "client-angular"
+}
+
 dependencies {
 
     // need this so that the gradle application-plugin can find the module built by the kotlin-plugin
-    runtime(project(path = ":server", configuration = "jvm8RuntimeElements"))
+    runtimeOnly(project(path = ":server", configuration = "jvm8RuntimeElements"))
 
     // to put the client module (angular code) on the classpath
-    jvm8MainImplementation(project(":client-angular"))
+    jvm8MainImplementation(project(":$client"))
 
     // ktor server modules
     jvm8MainImplementation("io.ktor:ktor-websockets:$version_ktor")
