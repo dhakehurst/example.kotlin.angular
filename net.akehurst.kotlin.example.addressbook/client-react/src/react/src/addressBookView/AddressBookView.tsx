@@ -49,72 +49,8 @@ export default class AddressBookView extends React.Component<AppProps, AddressBo
 
         const query = queryString.parse(this.props.location.search);
         this.state = new AddressBookViewState(query);
-        this.register();
         this.update(query);
-        userApi.userRequest.requestReadAllAddressBookTitles(userApi.session);
 
-    }
-
-    private register() {
-        userApi.userNotification.notifyCreatedAddressBookSubject.subscribe(title => {
-            this.setState(state => ({
-                addressBookList: state.addressBookList.concat(title)
-            }));
-        });
-        userApi.userNotification.notifyReadAllAddressBookSubject.subscribe(titles => {
-            this.setState(state => ({
-                addressBookList: titles.toArray()
-            }));
-        });
-        userApi.userNotification.notifyUpdatedAddressBookSubject.subscribe(args => {
-            let i = this.state.addressBookList.indexOf(args.oldTitle);
-            let abl = this.state.addressBookList.map(it => it);
-            abl.splice(i, 1, args.newTitle);
-            this.setState(state => ({
-                addressBookList: abl,
-                selectedAddressBookTitle: args.newTitle
-            }));
-        });
-        userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
-            let i = this.state.addressBookList.indexOf(title);
-            let abl = this.state.addressBookList.map(it => it);
-            abl.splice(i, 1);
-            this.setState(state => ({}));
-        });
-
-        userApi.userNotification.notifyCreatedContactSubject.subscribe(alias => {
-            this.setState(state => ({
-                contactList: state.contactList.concat(alias)
-            }));
-        });
-        userApi.userNotification.notifyReadAllContactSubject.subscribe(all => {
-            this.setState(state => ({
-                contactList: all.toArray()
-            }));
-        });
-        userApi.userNotification.notifyReadContactSubject.subscribe(contact => {
-            this.setState(state => ({
-                selectedContactAlias: contact.alias,
-                selectedContact: contact
-            }));
-        });
-        userApi.userNotification.notifyUpdatedContactSubject.subscribe(args => {
-            let i = this.state.contactList.indexOf(args.oldAlias);
-            let cl = this.state.contactList.map(it => it);
-            cl.splice(i, 1, args.updatedContact.alias);
-            this.setState(state => ({
-                contactList: cl,
-                selectedContactAlias: args.updatedContact.alias
-            }));
-        });
-        userApi.userNotification.notifyDeletedContactSubject.subscribe(alias => {
-            let i = this.state.contactList.indexOf(alias);
-            let cl = this.state.contactList.map(it => it);
-            cl.splice(i, 1);
-            this.setState(state => ({
-                contactList: cl
-            }));
-        });
     }
 
     render() {
@@ -219,6 +155,11 @@ export default class AddressBookView extends React.Component<AppProps, AddressBo
         );
     }
 
+    componentDidMount(): void {
+        this.register();
+        userApi.userRequest.requestReadAllAddressBookTitles(userApi.session);
+    }
+
     componentDidUpdate(prevProps: AppProps) {
         // because the Links to contacts change the query string, we need to test if it has changed and update accordingly
         if (this.props.location.search !== prevProps.location.search) {
@@ -228,6 +169,68 @@ export default class AddressBookView extends React.Component<AppProps, AddressBo
             });
             this.update(query);
         }
+    }
+
+    private register() {
+        userApi.userNotification.notifyCreatedAddressBookSubject.subscribe(title => {
+            this.setState(state => ({
+                addressBookList: state.addressBookList.concat(title)
+            }));
+        });
+        userApi.userNotification.notifyReadAllAddressBookSubject.subscribe(titles => {
+            this.setState(state => ({
+                addressBookList: titles.toArray()
+            }));
+        });
+        userApi.userNotification.notifyUpdatedAddressBookSubject.subscribe(args => {
+            let i = this.state.addressBookList.indexOf(args.oldTitle);
+            let abl = this.state.addressBookList.map(it => it);
+            abl.splice(i, 1, args.newTitle);
+            this.setState(state => ({
+                addressBookList: abl,
+                selectedAddressBookTitle: args.newTitle
+            }));
+        });
+        userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
+            let i = this.state.addressBookList.indexOf(title);
+            let abl = this.state.addressBookList.map(it => it);
+            abl.splice(i, 1);
+            this.setState(state => ({}));
+        });
+
+        userApi.userNotification.notifyCreatedContactSubject.subscribe(alias => {
+            this.setState(state => ({
+                contactList: state.contactList.concat(alias)
+            }));
+        });
+        userApi.userNotification.notifyReadAllContactSubject.subscribe(all => {
+            this.setState(state => ({
+                contactList: all.toArray()
+            }));
+        });
+        userApi.userNotification.notifyReadContactSubject.subscribe(contact => {
+            this.setState(state => ({
+                selectedContactAlias: contact.alias,
+                selectedContact: contact
+            }));
+        });
+        userApi.userNotification.notifyUpdatedContactSubject.subscribe(args => {
+            let i = this.state.contactList.indexOf(args.oldAlias);
+            let cl = this.state.contactList.map(it => it);
+            cl.splice(i, 1, args.updatedContact.alias);
+            this.setState(state => ({
+                contactList: cl,
+                selectedContactAlias: args.updatedContact.alias
+            }));
+        });
+        userApi.userNotification.notifyDeletedContactSubject.subscribe(alias => {
+            let i = this.state.contactList.indexOf(alias);
+            let cl = this.state.contactList.map(it => it);
+            cl.splice(i, 1);
+            this.setState(state => ({
+                contactList: cl
+            }));
+        });
     }
 
     private update(query) {

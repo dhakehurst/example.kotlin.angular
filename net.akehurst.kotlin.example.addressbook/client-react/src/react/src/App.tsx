@@ -40,15 +40,6 @@ export default class App extends React.Component<AppProps, AppState> {
     render() {
         console.log("start");
 
-        if (!this.state.ready) {
-            new Promise(resolve => {
-                userApi.init(resolve);
-            }).then(() => {
-                this.setState({ready: true});
-            });
-
-            console.log("initialised");
-        }
         return this.state.ready ? (
             <article>
                 <header className='App-header'>
@@ -66,10 +57,20 @@ export default class App extends React.Component<AppProps, AppState> {
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <section>
-                    <span>Waiting for connection to server...</span>
+                    <span>Waiting for websocket to connect...</span>
                 </section>
             </article>
         );
+    }
+
+    componentDidMount(): void {
+        new Promise(resolve => {
+            userApi.init(resolve);
+        }).then(() => {
+            this.setState({ready: true});
+        });
+
+        console.log("initialised");
     }
 
 };
