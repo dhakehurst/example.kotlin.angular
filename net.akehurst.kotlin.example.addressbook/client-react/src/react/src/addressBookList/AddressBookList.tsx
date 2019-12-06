@@ -15,33 +15,35 @@
  */
 
 import React from 'react';
+import {Link} from "@reach/router";
+import {AppProps} from "../App";
 import './AddressBookList.scss';
-
 import userApi from '../services/userApi.service'
 
 class AddressBookListState {
 
-    addressBookList : string[] = [];
+    addressBookList: string[] = [];
 
 }
 
-export default class AddressBookList extends React.Component<{}, AddressBookListState> {
+export default class AddressBookList extends React.Component<AppProps, AddressBookListState> {
 
-    constructor(props: Readonly<{}>) {
+    constructor(props: AppProps) {
         super(props);
         this.state = new AddressBookListState();
     }
 
     render() {
-        const elements = this.state.addressBookList.map((ab) =>
-            <tr key={ab.toString()}>
-                <td>
-                    <button className="remove" onClick={this.onRemove}>
-                        <i className="pi pi-minus"/>
-                    </button>
-                </td>
-                <td className="click">{ab}</td>
-            </tr>
+        const elements = this.state.addressBookList.map((ab) => {
+                return <tr key={ab.toString()}>
+                    <td>
+                        <button className="remove" onClick={this.onRemove.bind(this, ab)}>
+                            <i className="pi pi-minus"/>
+                        </button>
+                    </td>
+                    <td className="click"><Link to={'/addressBook?title=' + ab}>{ab}</Link></td>
+                </tr>
+            }
         );
         return (
             <section>
@@ -53,7 +55,7 @@ export default class AddressBookList extends React.Component<{}, AddressBookList
                         <thead>
                         <tr>
                             <th>
-                                <button className="add" onClick={this.onAdd}>
+                                <button className="add" onClick={this.onAdd.bind(this)}>
                                     <i className="pi pi-plus"/>
                                 </button>
                             </th>
@@ -61,7 +63,7 @@ export default class AddressBookList extends React.Component<{}, AddressBookList
                         </tr>
                         </thead>
                         <tbody>
-                            {elements}
+                        {elements}
                         </tbody>
                     </table>
 
@@ -73,25 +75,32 @@ export default class AddressBookList extends React.Component<{}, AddressBookList
     componentDidMount() {
         userApi.userNotification.notifyCreatedAddressBookSubject.subscribe(title => {
             this.setState(state => {
-               return { addressBookList: state.addressBookList.concat(title) };
+                return {addressBookList: state.addressBookList.concat(title)};
             });
         });
-        userApi.userNotification.notifyReadAllAddressBookSubject.subscribe( titles=>{
+        userApi.userNotification.notifyReadAllAddressBookSubject.subscribe(titles => {
             this.setState(state => {
-               return { addressBookList: titles.toArray() };
+                return {addressBookList: titles.toArray()};
             });
         });
         userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
-           // let i = this.addressBookList.indexOf(title);
-           // this.addressBookList.splice(i,1);
+            let i = this.state.addressBookList.indexOf(title);
+            const list = this.state.addressBookList.map(it=>it);
+            list.splice(i,1);
+            this.setState(state => {
+                return {addressBookList: list};
+            });
         });
         userApi.userRequest.requestReadAllAddressBookTitles(userApi.session)
     }
 
     onAdd(): void {
+        const title = 'new AddressBook';
+        userApi.userRequest.requestCreateAddressBook(userApi.session,title)
     }
 
-    onRemove(): void {
+    onRemove(title:string): void {
+        userApi.userRequest.requestDeleteAddressBook(userApi.session,title)
     }
 
 };

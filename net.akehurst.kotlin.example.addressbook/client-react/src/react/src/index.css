@@ -25,16 +25,6 @@ main {
   grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
 }
 
-app-root {
-  /* layout-children */
-  display: grid;
-  grid: auto-flow minmax(0, 1fr) / minmax(0, 1fr);
-}
-
-router-outlet {
-  display: none;
-}
-
 button.add {
   background-color: gold;
 }

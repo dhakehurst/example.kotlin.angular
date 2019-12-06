@@ -15,145 +15,280 @@
  */
 
 import React from 'react';
-import './AddressBookList.scss';
-
+import {Link, navigate} from "@reach/router";
+import queryString, {ParsedQuery} from 'query-string';
+import './AddressBookView.scss';
+import {AppProps} from "../App";
 import userApi from '../services/userApi.service'
 
 import info_js from 'net.akehurst.kotlin.example.addressbook-information';
 import info = info_js.net.akehurst.kotlin.example.addressbook.information;
 
+
 class AddressBookViewState {
 
-  addressBookList: string[] = [];
-  selectedAddressBookTitle: string;
+    constructor(
+        public query: ParsedQuery<string>
+    ) {
+    }
 
-  contactList: string[] = [];
-  selectedContactAlias: string; //keep this also, so that the value can be used for updates
-  selectedContact: info.Contact;
+    addressBookList: string[] = [];
+    selectedAddressBookTitle: string;
+
+    contactList: string[] = [];
+    selectedContactAlias: string; //keep this also, so that the value can be used for updates
+    selectedContact: info.Contact;
 
 }
 
 
-export default class AddressBookList extends React.Component<{}, AddressBookViewState> {
+export default class AddressBookView extends React.Component<AppProps, AddressBookViewState> {
 
-  constructor(props: Readonly<{}>) {
-    super(props);
-    this.state = new AddressBookViewState();
-  }
+    constructor(props: AppProps) {
+        super(props);
 
-  render() {
+        const query = queryString.parse(this.props.location.search);
+        this.state = new AddressBookViewState(query);
+        this.register();
+        this.update(query);
+        userApi.userRequest.requestReadAllAddressBookTitles(userApi.session);
 
-    const options = this.state.addressBookList.map((ab)=>
-      <option value={ab}>{ab}</option>
-    );
-    return (
-        <article>
-          <header>
-            <h2>
-              <select>
-                {options}
-              </select>
-            </h2>
-          </header>
-        </article>
-    );
-  }
+    }
 
-  init() {
-    this.route.queryParamMap.subscribe(params => {
-      if (params.has('title')) {
-        let title = params.get('title');
-        this._selectAddressBook(title);
-      } else {
-        //do nothing
-      }
-    });
+    private register() {
+        userApi.userNotification.notifyCreatedAddressBookSubject.subscribe(title => {
+            this.setState(state => ({
+                addressBookList: state.addressBookList.concat(title)
+            }));
+        });
+        userApi.userNotification.notifyReadAllAddressBookSubject.subscribe(titles => {
+            this.setState(state => ({
+                addressBookList: titles.toArray()
+            }));
+        });
+        userApi.userNotification.notifyUpdatedAddressBookSubject.subscribe(args => {
+            let i = this.state.addressBookList.indexOf(args.oldTitle);
+            let abl = this.state.addressBookList.map(it => it);
+            abl.splice(i, 1, args.newTitle);
+            this.setState(state => ({
+                addressBookList: abl,
+                selectedAddressBookTitle: args.newTitle
+            }));
+        });
+        userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
+            let i = this.state.addressBookList.indexOf(title);
+            let abl = this.state.addressBookList.map(it => it);
+            abl.splice(i, 1);
+            this.setState(state => ({}));
+        });
 
-    this.userApi.userNotification.notifyCreatedAddressBookSubject.subscribe(title => {
-      this.addressBookList.push(title);
-    });
-    this.userApi.userNotification.notifyReadAllAddressBookSubject.subscribe(titles => {
-      this.addressBookList = titles.toArray();
-    });
-    this.userApi.userNotification.notifyUpdatedAddressBookSubject.subscribe(args => {
-      let i = this.addressBookList.indexOf(args.oldTitle);
-      this.addressBookList.splice(i, 1, args.newTitle);
-      this.selectedAddressBookTitle = args.newTitle;
-    });
-    this.userApi.userNotification.notifyDeletedAddressBookSubject.subscribe(title => {
-      let i = this.addressBookList.indexOf(title);
-      this.addressBookList.splice(i, 1);
-    });
-    this.userApi.userRequest.requestReadAllAddressBookTitles(this.userApi.session);
+        userApi.userNotification.notifyCreatedContactSubject.subscribe(alias => {
+            this.setState(state => ({
+                contactList: state.contactList.concat(alias)
+            }));
+        });
+        userApi.userNotification.notifyReadAllContactSubject.subscribe(all => {
+            this.setState(state => ({
+                contactList: all.toArray()
+            }));
+        });
+        userApi.userNotification.notifyReadContactSubject.subscribe(contact => {
+            this.setState(state => ({
+                selectedContactAlias: contact.alias,
+                selectedContact: contact
+            }));
+        });
+        userApi.userNotification.notifyUpdatedContactSubject.subscribe(args => {
+            let i = this.state.contactList.indexOf(args.oldAlias);
+            let cl = this.state.contactList.map(it => it);
+            cl.splice(i, 1, args.updatedContact.alias);
+            this.setState(state => ({
+                contactList: cl,
+                selectedContactAlias: args.updatedContact.alias
+            }));
+        });
+        userApi.userNotification.notifyDeletedContactSubject.subscribe(alias => {
+            let i = this.state.contactList.indexOf(alias);
+            let cl = this.state.contactList.map(it => it);
+            cl.splice(i, 1);
+            this.setState(state => ({
+                contactList: cl
+            }));
+        });
+    }
 
-    this.userApi.userNotification.notifyCreatedContactSubject.subscribe(alias => {
-      this.contactList.push(alias);
-    });
-    this.userApi.userNotification.notifyReadAllContactSubject.subscribe(all => {
-      this.contactList = all.toArray();
-    });
-    this.userApi.userNotification.notifyReadContactSubject.subscribe(contact => {
-      this.selectedContactAlias = contact.alias;
-      this.selectedContact = contact;
-    });
-    this.userApi.userNotification.notifyUpdatedContactSubject.subscribe(args => {
-      let i = this.contactList.indexOf(args.oldAlias);
-      this.contactList.splice(i, 1, args.updatedContact.alias);
-      this.selectedContactAlias = args.updatedContact.alias;
-    });
-    this.userApi.userNotification.notifyDeletedContactSubject.subscribe(alias => {
-      let i = this.contactList.indexOf(alias);
-      this.contactList.splice(i, 1);
-    });
-  }
+    render() {
+        const options = this.state.addressBookList.map((ab) =>
+            <option value={ab} placeholder={'please select'}>{ab}</option>
+        );
+        const rows = this.state.contactList.map((ct) => {
+            const q = {title: this.state.query.title, contact: ct};
+            return (
+                <tr>
+                    <td>
+                        <button className="remove" onClick={this.onRequestDeleteContact.bind(this, ct)}><i
+                            className="pi pi-minus"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <Link to={'?' + queryString.stringify(q)}>{ct}</Link>
+                    </td>
+                </tr>
+            );
+        });
+        const contactView = (() => {
+            if (this.state.selectedContact) {
+                const contact = this.state.selectedContact;
+                const numbersView = contact.phoneNumbers.values.toArray().map(pn =>
+                    <tr>
+                        <td>
+                            <button className="remove" onClick={this.onRequestDeletePhoneNumber.bind(this, pn)}><i
+                                className="pi pi-minus"></i></button>
+                        </td>
+                        <td>{pn.label}</td>
+                        <td>{pn.number}</td>
+                    </tr>
+                );
+                return (
+                    <section className="section2">
+                        <label>alias: <input value={contact.alias} placeholder="alias"
+                                             onChange={this.onRequestUpdateContact.bind(this)}/> </label>
+                        <label>first name: <input value={contact.firstName} placeholder="firstName"/> </label>
+                        <label>last name: <input value={contact.lastName} placeholder="lastName"/> </label>
+                        <label>phone numbers:
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <button className="add" onClick={this.onRequestCreatePhoneNumber.bind(this)}><i
+                                            className="pi pi-plus"></i></button>
+                                    </th>
+                                    <th>Label</th>
+                                    <th>Number</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {numbersView}
+                                </tbody>
+                            </table>
+                        </label>
+                    </section>
+                );
+            } else {
+                return (
+                    <section className="section2">
+                    </section>
+                );
+            }
+        })();
+        return (
+            <article>
+                <header>
+                    <h2>
+                        <select onChange={this.onReadAddressBook.bind(this)} value={this.state.selectedAddressBookTitle}>
+                            <option disabled selected> -- select an option --</option>
+                            {options}
+                        </select>
+                    </h2>
+                </header>
+                <section className="section1">
+                    <label>title:
+                        <input onChange={this.onUpdateAddressBookTitle.bind(this)}
+                               value={this.state.selectedAddressBookTitle}
+                               placeholder="title"/>
+                    </label>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>
+                                <button className="add" onClick={this.onRequestCreateContact.bind(this)}><i
+                                    className="pi pi-plus"></i></button>
+                            </th>
+                            <th>Contact</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {rows}
+                        </tbody>
+                    </table>
+                </section>
+                <section className="section2">
+                    {contactView}
+                </section>
+            </article>
+        );
+    }
 
-  clear() {
-    this.selectedAddressBookTitle = null;
-    this.contactList = [];
-    this.selectedContactAlias = null;
-    this.selectedContact = null;
-  }
+    componentDidUpdate(prevProps: AppProps) {
+        // because the Links to contacts change the query string, we need to test if it has changed and update accordingly
+        if (this.props.location.search !== prevProps.location.search) {
+            const query = queryString.parse(this.props.location.search);
+            this.setState({
+                query: query
+            });
+            this.update(query);
+        }
+    }
 
-  _selectAddressBook(title: string) {
-    this.selectedAddressBookTitle = title;
-    this.userApi.userRequest.requestReadAllContact(this.userApi.session, this.selectedAddressBookTitle);
-  }
+    private update(query) {
+        if (query.title) {
+            this._selectAddressBook(query.title as string)
+        }
+        if (query.contact) {
+            const alias = query.contact as string;
+            userApi.userRequest.requestReadContact(userApi.session, query.title as string, alias);
+        }
+    }
 
-  updateAddressBookTitle($event) {
-    let newTitle = $event.target.value;
-    let oldTitle = this.selectedAddressBookTitle;
-    this.userApi.userRequest.requestUpdateAddressBook(this.userApi.session, oldTitle, newTitle);
-  }
+    private clear() {
+        this.setState({
+            selectedAddressBookTitle: null,
+            contactList: [],
+            selectedContactAlias: null,
+            selectedContact: null
+        });
+    }
 
-  readAddressBook($event) {
-    this.clear();
-    let title = $event.target.value;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {title: title},
-      queryParamsHandling: 'merge'
-    });
-  }
+    private _selectAddressBook(title: string) {
+        this.setState({
+            selectedAddressBookTitle: title
+        });
 
-  requestCreateContact() {
-    let newAlias = 'newContact'; //TODO: use a dialog to get the value
-    this.userApi.userRequest.requestCreateContact(this.userApi.session, this.selectedAddressBookTitle, newAlias);
-  }
+        userApi.userRequest.requestReadAllContact(userApi.session, title);
+    }
 
-  readContact(alias: string) {
-    this.userApi.userRequest.requestReadContact(this.userApi.session, this.selectedAddressBookTitle, alias);
-  }
+    onUpdateAddressBookTitle($event) {
+        let newTitle = $event.target.value;
+        let oldTitle = this.state.selectedAddressBookTitle;
+        userApi.userRequest.requestUpdateAddressBook(userApi.session, oldTitle, newTitle);
+    }
 
-  requestUpdateContact() {
-    this.userApi.userRequest.requestUpdateContact(this.userApi.session, this.selectedAddressBookTitle, this.selectedContactAlias, this.selectedContact);
-  }
+    onReadAddressBook(e) {
+        this.clear();
+        let title = e.target.value;
+        this.props.navigate('?title=' + title);
+    }
 
-  requestDeleteContact(alias: string) {
-    this.userApi.userRequest.requestDeleteContact(this.userApi.session, this.selectedAddressBookTitle, alias);
-  }
+    onRequestCreateContact(e) {
+        let newAlias = 'newContact'; //TODO: use a dialog to get the value
+        userApi.userRequest.requestCreateContact(userApi.session, this.state.selectedAddressBookTitle, newAlias);
+    }
 
-  requestCreatePhoneNumber() {
-  }
-  requestDeletePhoneNumber(phoneNumber:info.PhoneNumber) {
-  }
+    readContact(alias: string) {
+        userApi.userRequest.requestReadContact(userApi.session, this.state.selectedAddressBookTitle, alias);
+    }
+
+    onRequestUpdateContact() {
+        userApi.userRequest.requestUpdateContact(userApi.session, this.state.selectedAddressBookTitle, this.state.selectedContactAlias, this.state.selectedContact);
+    }
+
+    onRequestDeleteContact(alias: string) {
+        userApi.userRequest.requestDeleteContact(userApi.session, this.state.selectedAddressBookTitle, alias);
+    }
+
+    onRequestCreatePhoneNumber() {
+    }
+
+    onRequestDeletePhoneNumber(phoneNumber: info.PhoneNumber) {
+    }
 }

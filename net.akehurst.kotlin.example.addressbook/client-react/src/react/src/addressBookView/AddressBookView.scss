@@ -36,6 +36,9 @@ article {
           th {
             text-align: left;
           }
+          th:first-child {
+            width: 1%;
+          }
         }
       }
       tbody {

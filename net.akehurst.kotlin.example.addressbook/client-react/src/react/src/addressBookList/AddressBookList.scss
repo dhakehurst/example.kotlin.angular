@@ -7,6 +7,12 @@ section {
 table {
   thead {
     border: 1px solid black;
+    th {
+      text-align: left;
+    }
+    tr th:first-child {
+      width: 1%;
+    }
   }
   tbody {
     border: 1px solid black;

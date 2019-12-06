@@ -19,13 +19,13 @@ import { Subject} from 'rxjs';
 import {kotlin as $kotlin} from 'kotlin';
 import info_js from 'net.akehurst.kotlin.example.addressbook-information';
 import ui_js from 'net.akehurst.kotlin.example.addressbook-user-api';
-import {net as gui2core_js} from 'net.akehurst.kotlin.example.addressbook-gui2core';
-import {net as wsc_js} from 'net.akehurst.kotlin.example.addressbook-websocketClient'
+import gui2core_js from 'net.akehurst.kotlin.example.addressbook-gui2core';
+import wsc_js from 'net.akehurst.kotlin.example.addressbook-websocketClient'
 
 import UI = ui_js.net.akehurst.kotlin.example.addressbook.user.api;
 import info = info_js.net.akehurst.kotlin.example.addressbook.information;
-import gui2core = gui2core_js.akehurst.kotlin.example.addressbook.gui2core;
-import wsc = wsc_js.akehurst.kotlin.example.addressbook.websocket.client.ktor;
+import gui2core = gui2core_js.net.akehurst.kotlin.example.addressbook.gui2core;
+import wsc = wsc_js.net.akehurst.kotlin.example.addressbook.websocket.client.ktor;
 
 class UserApiService {
 
