@@ -185,7 +185,7 @@ export default class AddressBookView extends React.Component<AppProps, AddressBo
             <article>
                 <header>
                     <h2>
-                        <select onChange={this.onReadAddressBook.bind(this)} value={this.state.selectedAddressBookTitle}>
+                        <select onChange={this.onReadAddressBook.bind(this)} value={this.state.query.title}>
                             <option disabled selected> -- select an option --</option>
                             {options}
                         </select>
