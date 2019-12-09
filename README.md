@@ -4,11 +4,22 @@
 An example to illustrate the use of kotlin modules in an angular application
 
 ## Build
+
+A zip containing the application will be in the `.gradle-build/server/distributions`
+
+With an Angular UI
+
 ```
 > cd net.akehurst.kotlin.example.addressbook
-> ./gradlew build
+> ./gradlew build -Pclient=angular
 ```
-A zip containing the application will be in the `.gradle-build/server/distributions`
+
+With a React UI
+
+```
+> cd net.akehurst.kotlin.example.addressbook
+> ./gradlew build -Pclient=react
+```
 
 ## Or just run it
 
