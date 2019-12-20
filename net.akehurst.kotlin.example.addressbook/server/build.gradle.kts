@@ -21,7 +21,7 @@ plugins {
 }
 
 val version_ktor: String by project
-val version_ktor_spa: String = "1.1.4"
+val version_coroutines: String by project
 
 repositories {
     maven {
@@ -47,7 +47,10 @@ dependencies {
     jvm8MainImplementation("io.ktor:ktor-websockets:$version_ktor")
     jvm8MainImplementation("io.ktor:ktor-server-core:$version_ktor")
     jvm8MainImplementation("io.ktor:ktor-server-jetty:$version_ktor")
-    jvm8MainImplementation("com.github.lamba92:ktor-spa:$version_ktor_spa")
+
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$version_coroutines") {
+        isForce=true
+    }
 
     commonMainImplementation(project(":gui2core"))
 

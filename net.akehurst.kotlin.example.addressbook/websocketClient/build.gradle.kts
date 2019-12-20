@@ -15,10 +15,14 @@
  */
 
 val version_ktor:String by project
+val version_coroutines:String by project
 
 dependencies {
 
     commonMainImplementation("io.ktor:ktor-client-websockets-native:$version_ktor")
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$version_coroutines") {
+        isForce=true
+    }
 
 }
 
