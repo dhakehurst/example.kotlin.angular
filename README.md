@@ -34,5 +34,5 @@ With a React UI
 
 ```
 > cd net.akehurst.kotlin.example.addressbook
-> ./gradlew run run -Pclient=react
+> ./gradlew run -Pclient=react
 ```
