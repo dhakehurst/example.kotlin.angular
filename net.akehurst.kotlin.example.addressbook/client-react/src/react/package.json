@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "yargs": "15.0.2"
   },
   "eslintConfig": {
